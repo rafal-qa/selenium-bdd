@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+}
+
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
+    compile group: 'org.assertj', name: 'assertj-core', version: '3.13.2'
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
+}
+
+import org.gradle.internal.os.OperatingSystem
+
+def getWebdriverPath = {
+    if (OperatingSystem.current().isWindows()) {
+        return [chromedriver: "$rootDir\\lib\\chromedriver.exe",
+                geckodriver: "$rootDir\\lib\\geckodriver.exe"]
+    } else {
+        return [chromedriver: "$rootDir/lib/chromedriver",
+                geckodriver: "$rootDir/lib/geckodriver"]
+    }
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty 'test.base_url', 'https://rafal-qa.com/pagewalker-example-report'
+    systemProperty 'test.browser', 'chrome' // options: chrome, firefox
+    def webdriverPath = getWebdriverPath()
+    systemProperty 'webdriver.chrome.driver', webdriverPath.chromedriver
+    systemProperty 'webdriver.gecko.driver', webdriverPath.geckodriver
+}
